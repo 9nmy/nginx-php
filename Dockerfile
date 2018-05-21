@@ -11,7 +11,7 @@ ENV PHP_DIR /usr/local/php
 ENV NGINX_DIR /usr/local/nginx
 
 RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories \
-	&& apk add --no-cache --virtual .persistent-deps ca-certificates curl pcre zlib libcrypto1.0 libssl1.0 libressl gettext bison \
+	&& apk add --no-cache --virtual .persistent-deps ca-certificates curl pcre zlib libpng libjpeg libcrypto1.0 libssl1.0 libressl gettext bison \
 	&& set -xe \
 	&& addgroup -g 82 -S $EXEC_USER \
 	&& adduser -u 82 -D -S -G $EXEC_USER $EXEC_USER \
@@ -23,7 +23,7 @@ RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
 	\
 #开始安装php
 	&& export CFLAGS="-fstack-protector-strong -fpic -fpie -O2" CPPFLAGS="-fstack-protector-strong -fpic -fpie -O2" LDFLAGS="-Wl,-O1 -Wl,--hash-style=both -pie" \
-	&& apk add --no-cache --virtual .php-deps autoconf dpkg-dev dpkg file g++ gcc libc-dev make pkgconf re2c coreutils curl-dev libedit-dev libressl-dev libsodium-dev libxml2-dev gettext-dev sqlite-dev  \
+	&& apk add --no-cache --virtual .php-deps autoconf dpkg-dev dpkg file g++ gcc libc-dev make pkgconf re2c coreutils curl-dev libpng-dev libedit-dev libressl-dev libsodium-dev libxml2-dev gettext-dev sqlite-dev  \
 	&& cd /usr/src && wget http://jp2.php.net/distributions/php-$PHP_VERSION.tar.gz && tar -xvf php-$PHP_VERSION.tar.gz && rm -rf php-$PHP_VERSION.tar.gz && mv php-$PHP_VERSION php  \
 	&& cd /usr/src/php \
 	&& gnuArch="$(dpkg-architecture --query DEB_BUILD_GNU_TYPE)" \
@@ -41,6 +41,7 @@ RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
 		--enable-xml \
 		--enable-fpm --with-fpm-user=$EXEC_USER --with-fpm-group=$EXEC_USER \
 		--with-sodium=shared \
+		--with-gd \
 		--with-curl \
 		--with-openssl \
 		--with-gettext \
@@ -140,13 +141,13 @@ RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
 		echo -e "	worker_connections  1024;"; \
 		echo -e "}\n\n"; \
 		echo -e "http {"; \
-	    echo -e "	include       $NGINX_DIR/conf/mime.types;"; \
-	    echo -e "	default_type  application/octet-stream;\n\n"; \
+		echo -e "	include       $NGINX_DIR/conf/mime.types;"; \
+		echo -e "	default_type  application/octet-stream;\n\n"; \
 		echo -e "	log_format  main  '\$remote_addr - \$remote_user [\$time_local] \"\$request\" \$status $body_bytes_sent \"\$http_referer\" \"\$http_user_agent\" \"\$http_x_forwarded_for\"'"; \
-	    echo -e "	access_log  $NGINX_DIR/log/access.log  main;\n\n"; \
-	    echo -e "	sendfile        on;"; \
-	    echo -e "	keepalive_timeout  65;\n\n"; \
-	    echo -e "	include $NGINX_DIR/conf.d/*.conf;"; \
+		echo -e "	access_log  $NGINX_DIR/log/access.log  main;\n\n"; \
+		echo -e "	sendfile        on;"; \
+		echo -e "	keepalive_timeout  65;\n\n"; \
+		echo -e "	include $NGINX_DIR/conf.d/*.conf;"; \
 		echo -e "}\n\n"; \
 	} | tee $NGINX_DIR/conf/nginx.conf \
 	&& touch $NGINX_DIR/log/access.log && touch $NGINX_DIR/log/error.log && ln -sf /dev/stdout $NGINX_DIR/log/access.log && ln -sf /dev/stderr $NGINX_DIR/log/error.log \
@@ -154,6 +155,3 @@ RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
 	&& cd / && apk del .nginx-deps && rm -rf /usr/src/nginx \
 	\
 	&& ln -s $NGINX_DIR/sbin/nginx /usr/local/sbin/nginx
-
-
-CMD nginx && php-fpm
