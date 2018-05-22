@@ -27,7 +27,7 @@ RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
 	&& cd /usr/src && wget http://jp2.php.net/distributions/php-$PHP_VERSION.tar.gz && tar -xvf php-$PHP_VERSION.tar.gz && rm -rf php-$PHP_VERSION.tar.gz && mv php-$PHP_VERSION php  \
 	&& cd /usr/src/php \
 	&& gnuArch="$(dpkg-architecture --query DEB_BUILD_GNU_TYPE)" \
-	&& mkdir -p $PHP_DIR/etc/php.d && mkdir -p $PHP_DIR/var/session && chown -R $EXEC_USER.$EXEC_USER $PHP_DIR/var/session \
+	&& mkdir -p $PHP_DIR/etc/php.d && mkdir -p $PHP_DIR/var/log && chown -R $EXEC_USER.$EXEC_USER $PHP_DIR/var/log && mkdir -p $PHP_DIR/var/session && chown -R $EXEC_USER.$EXEC_USER $PHP_DIR/var/session \
 	&& ./configure \
 		--prefix=$PHP_DIR \
 		--with-config-file-path=$PHP_DIR/etc \
@@ -47,6 +47,8 @@ RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
 		--with-gettext \
 		--with-zlib \
 		--with-mhash \
+		--with-mysqli=mysqlnd \
+		--with-pdo-mysql=mysqlnd \
 		\
 	&& make -j "$(nproc)" \
 	&& make install && make clean \
@@ -60,14 +62,14 @@ RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
 	&& { echo 'extension = mongodb.so'; } | tee $PHP_DIR/etc/php.d/mongodb.ini \
 	&& { \
 		echo '[global]'; \
-		echo 'error_log = /dev/stderr'; \
+		echo "error_log = $PHP_DIR/var/log/error.log"; \
 		echo 'daemonize = no'; \
 		echo '[www]'; \
 		echo 'listen = 9000'; \
 		echo "listen.owner = $EXEC_USER"; \
 		echo "listen.group = $EXEC_USER"; \
 		echo 'listen.mode = 0660'; \
-		echo 'access.log = /dev/stderr'; \
+		echo "access.log = $PHP_DIR/var/log/access.log"; \
 		echo 'clear_env = no'; \
 		echo 'catch_workers_output = yes'; \
 		echo 'php_value[session.save_handler] = files'; \
@@ -93,7 +95,7 @@ RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
 	&& apk add --no-cache --virtual .nginx-deps gcc libc-dev make openssl-dev pcre-dev zlib-dev linux-headers gnupg libxslt-dev gd-dev geoip-dev \
 	&& cd /usr/src && wget http://nginx.org/download/nginx-$NGINX_VERSION.tar.gz && tar -xvf nginx-$NGINX_VERSION.tar.gz && rm nginx-$NGINX_VERSION.tar.gz && mv nginx-$NGINX_VERSION nginx \
 	&& cd /usr/src/nginx \
-	&& mkdir -p $NGINX_DIR/conf.d && mkdir -p $NGINX_DIR/log && mkdir -p $NGINX_DIR/run \
+	&& mkdir -p $NGINX_DIR/conf.d && mkdir -p $NGINX_DIR/logs && chown -R $EXEC_USER.$EXEC_USER $NGINX_DIR/logs && mkdir -p $NGINX_DIR/run && chown -R $EXEC_USER.$EXEC_USER $NGINX_DIR/run \
 	&& ./configure \
 		--prefix=$NGINX_DIR \
 		--conf-path=$NGINX_DIR/conf/nginx.conf \
@@ -135,7 +137,7 @@ RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
 		echo -e ""; \
 		echo -e "user $EXEC_USER;"; \
 		echo -e "worker_processes  1;\n\n"; \
-		echo -e "error_log  $NGINX_DIR/log/error.log warn;"; \
+		echo -e "error_log  $NGINX_DIR/logs/error.log warn;"; \
 		echo -e "pid  $NGINX_DIR/run/nginx.pid;\n\n"; \
 		echo -e "events {"; \
 		echo -e "	worker_connections  1024;"; \
@@ -144,13 +146,12 @@ RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
 		echo -e "	include       $NGINX_DIR/conf/mime.types;"; \
 		echo -e "	default_type  application/octet-stream;\n\n"; \
 		echo -e "	log_format  main  '\$remote_addr - \$remote_user [\$time_local] \"\$request\" \$status $body_bytes_sent \"\$http_referer\" \"\$http_user_agent\" \"\$http_x_forwarded_for\"'"; \
-		echo -e "	access_log  $NGINX_DIR/log/access.log  main;\n\n"; \
+		echo -e "	access_log  $NGINX_DIR/logs/access.log  main;\n\n"; \
 		echo -e "	sendfile        on;"; \
 		echo -e "	keepalive_timeout  65;\n\n"; \
 		echo -e "	include $NGINX_DIR/conf.d/*.conf;"; \
 		echo -e "}\n\n"; \
 	} | tee $NGINX_DIR/conf/nginx.conf \
-	&& touch $NGINX_DIR/log/access.log && touch $NGINX_DIR/log/error.log && ln -sf /dev/stdout $NGINX_DIR/log/access.log && ln -sf /dev/stderr $NGINX_DIR/log/error.log \
 	&& export -n CFLAGS \
 	&& cd / && apk del .nginx-deps && rm -rf /usr/src/nginx \
 	\
