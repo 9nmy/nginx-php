@@ -51,6 +51,7 @@ RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
                 --with-mhash \
                 --with-mysqli=mysqlnd \
                 --with-pdo-mysql=mysqlnd \
+                --with-freetype-dir \
                 \
         && make -j "$(nproc)" \
         && make install && make clean \
