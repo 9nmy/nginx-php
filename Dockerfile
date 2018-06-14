@@ -53,6 +53,7 @@ RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
                 --with-pdo-mysql=mysqlnd \
                 --with-freetype-dir \
                 --with-jpeg-dir \
+                --with-png-dir \
                 \
         && make -j "$(nproc)" \
         && make install && make clean \
