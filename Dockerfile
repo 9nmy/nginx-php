@@ -41,6 +41,7 @@ RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
                 --enable-mysqlnd \
                 --enable-xml \
                 --enable-zip \
+                --enable-soap \
                 --enable-fpm --with-fpm-user=$EXEC_USER --with-fpm-group=$EXEC_USER \
                 --with-sodium=shared \
                 --with-gd \
