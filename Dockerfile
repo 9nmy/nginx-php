@@ -1,4 +1,4 @@
-FROM alpine:3.8
+FROM alpine:3.7
 
 ENV TZ CST-8
 ENV EXEC_USER www-data
