@@ -17,7 +17,6 @@ RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
         && addgroup -g 82 -S $EXEC_USER \
         && adduser -u 82 -D -S -G $EXEC_USER $EXEC_USER \
         && mkdir -p /usr/src && mkdir -p /usr/local/sbin \
-        && mkdir -p /data/www && chown -R $EXEC_USER.$EXEC_USER /data/www \
         \
         \
         \
