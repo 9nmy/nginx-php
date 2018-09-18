@@ -74,6 +74,11 @@ RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
                 echo "listen.owner = $EXEC_USER"; \
                 echo "listen.group = $EXEC_USER"; \
                 echo 'listen.mode = 0660'; \
+                echo 'pm.max_children = 55'; \
+                echo 'pm.start_servers = 10'; \
+                echo 'pm.min_spare_servers = 5'; \
+                echo 'pm.max_spare_servers = 55'; \
+                echo 'pm.max_requests = 500'; \
                 echo "access.log = $PHP_DIR/var/log/access.log"; \
                 echo 'clear_env = no'; \
                 echo 'catch_workers_output = yes'; \
