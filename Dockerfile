@@ -70,10 +70,11 @@ RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
                 echo "error_log = $PHP_DIR/var/log/error.log"; \
                 echo 'daemonize = no'; \
                 echo '[www]'; \
-                echo 'listen = 9000'; \
+                echo "listen =  $PHP_DIR/var/run/php-fpm.sock"; \
                 echo "listen.owner = $EXEC_USER"; \
                 echo "listen.group = $EXEC_USER"; \
                 echo 'listen.mode = 0660'; \
+                echo 'pm = dynamic'; \
                 echo 'pm.max_children = 55'; \
                 echo 'pm.start_servers = 10'; \
                 echo 'pm.min_spare_servers = 5'; \
