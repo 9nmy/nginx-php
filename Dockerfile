@@ -4,6 +4,7 @@ ENV TZ CST-8
 ENV EXEC_USER www-data
 ENV PHP_VERSION 7.2.13
 ENV NGINX_VERSION 1.15.7
+ENV PHP_SWOOLE 4.2.10
 ENV PHP_REDIS 4.2.0
 ENV PHP_YAF     3.0.7
 ENV PHP_MONGODB 1.5.3
@@ -59,6 +60,8 @@ RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
         && make install && make clean \
         && cp php.ini-production $PHP_DIR/lib/php.ini && cp $PHP_DIR/etc/php-fpm.conf.default $PHP_DIR/etc/php-fpm.conf && cp $PHP_DIR/etc/php-fpm.d/www.conf.default $PHP_DIR/etc/php-fpm.d/www.conf \
         && cd ext \
+        && wget http://pecl.php.net/get/swoole-$PHP_SWOOLE.tgz && tar -xvf swoole-$PHP_SWOOLE.tgz && rm -rf swoole-$PHP_SWOOLE.tgz && cd swoole-$PHP_SWOOLE && $PHP_DIR/bin/phpize && ./configure --with-php-config=$PHP_DIR/bin/php-config && make && make install && make clean && cd .. \
+        && { echo 'extension = swoole.so'; } | tee $PHP_DIR/etc/php.d/swoole.ini \
         && wget http://pecl.php.net/get/redis-$PHP_REDIS.tgz && tar -xvf redis-$PHP_REDIS.tgz && rm -rf redis-$PHP_REDIS.tgz && cd redis-$PHP_REDIS && $PHP_DIR/bin/phpize && ./configure --with-php-config=$PHP_DIR/bin/php-config && make && make install && make clean && cd .. \
         && { echo 'extension = redis.so'; } | tee $PHP_DIR/etc/php.d/redis.ini \
         && wget http://pecl.php.net/get/yaf-$PHP_YAF.tgz && tar -xvf yaf-$PHP_YAF.tgz && rm -rf yaf-$PHP_YAF.tgz && cd yaf-$PHP_YAF && $PHP_DIR/bin/phpize && ./configure --with-php-config=$PHP_DIR/bin/php-config && make && make install && make clean && cd .. \
