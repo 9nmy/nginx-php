@@ -60,7 +60,7 @@ RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
         && make install && make clean \
         && cp php.ini-production $PHP_DIR/lib/php.ini && cp $PHP_DIR/etc/php-fpm.conf.default $PHP_DIR/etc/php-fpm.conf && cp $PHP_DIR/etc/php-fpm.d/www.conf.default $PHP_DIR/etc/php-fpm.d/www.conf \
         && cd ext \
-        && wget http://pecl.php.net/get/swoole-$PHP_SWOOLE.tgz && tar -xvf swoole-$PHP_SWOOLE.tgz && rm -rf swoole-$PHP_SWOOLE.tgz && cd swoole-$PHP_SWOOLE && $PHP_DIR/bin/phpize && ./configure --with-php-config=$PHP_DIR/bin/php-config && make && make install && make clean && cd .. \
+        && wget http://pecl.php.net/get/swoole-$PHP_SWOOLE.tgz && tar -xvf swoole-$PHP_SWOOLE.tgz && rm -rf swoole-$PHP_SWOOLE.tgz && cd swoole-$PHP_SWOOLE && $PHP_DIR/bin/phpize && ./configure --with-php-config=$PHP_DIR/bin/php-config --enable-coroutine --enable-openssl --enable-http2 --enable-sockets --enable-mysqlnd --enable-async-redis && make && make install && make clean && cd .. \
         && { echo 'extension = swoole.so'; } | tee $PHP_DIR/etc/php.d/swoole.ini \
         && wget http://pecl.php.net/get/redis-$PHP_REDIS.tgz && tar -xvf redis-$PHP_REDIS.tgz && rm -rf redis-$PHP_REDIS.tgz && cd redis-$PHP_REDIS && $PHP_DIR/bin/phpize && ./configure --with-php-config=$PHP_DIR/bin/php-config && make && make install && make clean && cd .. \
         && { echo 'extension = redis.so'; } | tee $PHP_DIR/etc/php.d/redis.ini \
