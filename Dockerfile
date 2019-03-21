@@ -61,7 +61,7 @@ RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
                 --with-freetype-dir \
                 --with-jpeg-dir \
                 --with-png-dir \
-                --with-iconv-dir=/usr/local/libiconv \
+                --with-iconv=/usr/local/libiconv \
                 \
         && make -j "$(nproc)" \
         && make install && make clean \
