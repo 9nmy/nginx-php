@@ -80,8 +80,8 @@ RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
                 echo "error_log = $PHP_DIR/var/log/error.log"; \
                 echo 'daemonize = no'; \
                 echo '[docker]'; \
-                echo 'user = www-data'; \
-                echo 'group = www-data'; \
+                echo "user = $EXEC_USER"; \
+                echo "group = $EXEC_USER"; \
                 echo "listen =  $PHP_DIR/var/run/php-fpm.sock"; \
                 echo "listen.owner = $EXEC_USER"; \
                 echo "listen.group = $EXEC_USER"; \
