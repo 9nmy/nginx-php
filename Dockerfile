@@ -13,7 +13,7 @@ ENV PHP_DIR /usr/local/php
 ENV NGINX_DIR /usr/local/nginx
 
 RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories \
-        && apk add --no-cache --virtual .persistent-deps ca-certificates curl pcre zlib freetype libpng jpeg libcrypto1.0 libssl1.0 libressl libstdc++ gettext bison \
+        && apk add --no-cache --virtual .persistent-deps ca-certificates curl pcre zlib freetype libpng jpeg libcrypto1.0 libssl1.1 libressl libstdc++ gettext bison \
         && set -xe \
         && addgroup -g 82 -S $EXEC_USER \
         && adduser -u 82 -D -S -G $EXEC_USER $EXEC_USER \
