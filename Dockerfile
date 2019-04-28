@@ -79,7 +79,9 @@ RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
                 echo '[global]'; \
                 echo "error_log = $PHP_DIR/var/log/error.log"; \
                 echo 'daemonize = no'; \
-                echo '[www]'; \
+                echo '[docker]'; \
+                echo 'user = www-data'; \
+                echo 'group = www-data'; \
                 echo "listen =  $PHP_DIR/var/run/php-fpm.sock"; \
                 echo "listen.owner = $EXEC_USER"; \
                 echo "listen.group = $EXEC_USER"; \
@@ -87,7 +89,7 @@ RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
                 echo 'pm = dynamic'; \
                 echo 'pm.max_children = 55'; \
                 echo 'pm.start_servers = 10'; \
-                echo 'pm.min_spare_servers = 5'; \
+                echo 'pm.min_spare_servers = 10'; \
                 echo 'pm.max_spare_servers = 55'; \
                 echo 'pm.max_requests = 500'; \
                 echo "access.log = $PHP_DIR/var/log/access.log"; \
@@ -96,6 +98,7 @@ RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
                 echo 'php_value[session.save_handler] = files'; \
                 echo "php_value[session.save_path]    = $PHP_DIR/var/session"; \
         } | tee $PHP_DIR/etc/php-fpm.d/docker.conf \
+        && rm -rf PHP_DIR/etc/php-fpm.d/www.conf \
         && export -n CFLAGS CPPFLAGS LDFLAGS \
         && cd / && apk del .php-deps && rm -rf /usr/src/php && rm -rf /tmp/pear ~/.pearrc \
         \
