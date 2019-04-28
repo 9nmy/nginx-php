@@ -98,7 +98,7 @@ RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
                 echo 'php_value[session.save_handler] = files'; \
                 echo "php_value[session.save_path]    = $PHP_DIR/var/session"; \
         } | tee $PHP_DIR/etc/php-fpm.d/docker.conf \
-        && rm -rf PHP_DIR/etc/php-fpm.d/www.conf \
+        && rm -rf $PHP_DIR/etc/php-fpm.d/www.conf \
         && export -n CFLAGS CPPFLAGS LDFLAGS \
         && cd / && apk del .php-deps && rm -rf /usr/src/php && rm -rf /tmp/pear ~/.pearrc \
         \
