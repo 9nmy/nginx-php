@@ -8,6 +8,7 @@ ENV PHP_SWOOLE 4.3.3
 ENV PHP_REDIS 4.3.0
 ENV PHP_YAF     3.0.8
 ENV PHP_MONGODB 1.5.3
+ENV PHP_RDKAFKA 3.1.2
 
 ENV PHP_DIR /usr/local/php
 ENV NGINX_DIR /usr/local/nginx
@@ -75,6 +76,8 @@ RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
         && { echo 'extension = yaf.so'; } | tee $PHP_DIR/etc/php.d/yaf.ini \
         && wget http://pecl.php.net/get/mongodb-$PHP_MONGODB.tgz && tar -xvf mongodb-$PHP_MONGODB.tgz && rm -rf mongodb-$PHP_MONGODB.tgz && cd mongodb-$PHP_MONGODB && $PHP_DIR/bin/phpize && ./configure --with-php-config=$PHP_DIR/bin/php-config && make && make install && make clean && cd .. \
         && { echo 'extension = mongodb.so'; } | tee $PHP_DIR/etc/php.d/mongodb.ini \
+        && wget http://pecl.php.net/get/rdkafka-$PHP_RDKAFKA.tgz && tar -xvf rdkafka-$PHP_RDKAFKA.tgz && rm -rf rdkafka-$PHP_RDKAFKA.tgz && cd rdkafka-$PHP_RDKAFKA && $PHP_DIR/bin/phpize && ./configure --with-php-config=$PHP_DIR/bin/php-config && make && make install && make clean && cd .. \
+        && { echo 'extension = rdkafka.so'; } | tee $PHP_DIR/etc/php.d/rdkafka.ini \
         && { \
                 echo '[global]'; \
                 echo "error_log = $PHP_DIR/var/log/error.log"; \
