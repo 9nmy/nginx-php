@@ -28,6 +28,8 @@ RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
         \
 #安装libiconv  php的iconv函数需要  若不需要，可以省略
         && wget http://ftp.gnu.org/pub/gnu/libiconv/libiconv-1.15.tar.gz && tar -xvf libiconv-1.15.tar.gz && rm -rf libiconv-1.15.tar.gz && cd libiconv-1.15 && ./configure --prefix=/usr/local/libiconv && make && make install && make clean && cd .. && rm -rf libiconv-1.15 \
+#安装librdkafka php的rdkafka拓展需要这个依赖
+        && wget https://github.com/edenhill/librdkafka/archive/master.zip -O librdkafka.zip && unzip librdkafka.zip && cd librdkafka-master && ./configure && make && make install && make clean && cd .. && rm -rf librdkafka.zip && rm -rf librdkafka-master  \
         \
         \
         && cd /usr/src && wget http://jp2.php.net/distributions/php-$PHP_VERSION.tar.gz && tar -xvf php-$PHP_VERSION.tar.gz && rm -rf php-$PHP_VERSION.tar.gz && mv php-$PHP_VERSION php  \
