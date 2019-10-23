@@ -2,12 +2,12 @@ FROM alpine:3.9
 
 ENV TZ CST-8
 ENV EXEC_USER www-data
-ENV PHP_VERSION 7.3.4
-ENV NGINX_VERSION 1.16.0
-ENV PHP_SWOOLE 4.3.3
+ENV PHP_VERSION 7.3.10
+ENV NGINX_VERSION 1.17.5
+ENV PHP_GRPC 1.23.1
 ENV PHP_REDIS 4.3.0
 ENV PHP_YAF     3.0.8
-ENV PHP_MONGODB 1.5.3
+ENV PHP_PROTOBUF 3.10.0
 ENV PHP_RDKAFKA 3.1.2
 
 ENV PHP_DIR /usr/local/php
@@ -68,14 +68,14 @@ RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
         && make install && make clean \
         && cp php.ini-production $PHP_DIR/lib/php.ini && cp $PHP_DIR/etc/php-fpm.conf.default $PHP_DIR/etc/php-fpm.conf && cp $PHP_DIR/etc/php-fpm.d/www.conf.default $PHP_DIR/etc/php-fpm.d/www.conf \
         && cd ext \
-        && wget http://pecl.php.net/get/swoole-$PHP_SWOOLE.tgz && tar -xvf swoole-$PHP_SWOOLE.tgz && rm -rf swoole-$PHP_SWOOLE.tgz && cd swoole-$PHP_SWOOLE && $PHP_DIR/bin/phpize && ./configure --with-php-config=$PHP_DIR/bin/php-config --enable-coroutine --enable-openssl --enable-http2 --enable-sockets --enable-mysqlnd --enable-async-redis && make && make install && make clean && cd .. \
-        && { echo 'extension = swoole.so'; } | tee $PHP_DIR/etc/php.d/swoole.ini \
+        && wget http://pecl.php.net/get/grpc-$PHP_GRPC.tgz && tar -xvf grpc-$PHP_GRPC.tgz && rm -rf grpc-$PHP_GRPC.tgz && cd grpc-$PHP_GRPC && $PHP_DIR/bin/phpize && ./configure --with-php-config=$PHP_DIR/bin/php-config && make && make install && make clean && cd .. \
+        && { echo 'extension = grpc.so'; } | tee $PHP_DIR/etc/php.d/grpc.ini \
         && wget http://pecl.php.net/get/redis-$PHP_REDIS.tgz && tar -xvf redis-$PHP_REDIS.tgz && rm -rf redis-$PHP_REDIS.tgz && cd redis-$PHP_REDIS && $PHP_DIR/bin/phpize && ./configure --with-php-config=$PHP_DIR/bin/php-config && make && make install && make clean && cd .. \
         && { echo 'extension = redis.so'; } | tee $PHP_DIR/etc/php.d/redis.ini \
         && wget http://pecl.php.net/get/yaf-$PHP_YAF.tgz && tar -xvf yaf-$PHP_YAF.tgz && rm -rf yaf-$PHP_YAF.tgz && cd yaf-$PHP_YAF && $PHP_DIR/bin/phpize && ./configure --with-php-config=$PHP_DIR/bin/php-config && make && make install && make clean && cd .. \
         && { echo 'extension = yaf.so'; } | tee $PHP_DIR/etc/php.d/yaf.ini \
-        && wget http://pecl.php.net/get/mongodb-$PHP_MONGODB.tgz && tar -xvf mongodb-$PHP_MONGODB.tgz && rm -rf mongodb-$PHP_MONGODB.tgz && cd mongodb-$PHP_MONGODB && $PHP_DIR/bin/phpize && ./configure --with-php-config=$PHP_DIR/bin/php-config && make && make install && make clean && cd .. \
-        && { echo 'extension = mongodb.so'; } | tee $PHP_DIR/etc/php.d/mongodb.ini \
+        && wget http://pecl.php.net/get/protobuf-$PHP_PROTOBUF.tgz && tar -xvf protobuf-$PHP_PROTOBUF.tgz && rm -rf protobuf-$PHP_PROTOBUF.tgz && cd protobuf-$PHP_PROTOBUF && $PHP_DIR/bin/phpize && ./configure --with-php-config=$PHP_DIR/bin/php-config && make && make install && make clean && cd .. \
+        && { echo 'extension = protobuf.so'; } | tee $PHP_DIR/etc/php.d/protobuf.ini \
         && { \
                 echo '[global]'; \
                 echo "error_log = $PHP_DIR/var/log/error.log"; \
